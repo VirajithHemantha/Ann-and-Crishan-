@@ -11,55 +11,98 @@ export const Countdown: React.FC<CountdownProps> = ({ targetDate }) => {
     hours: 0,
     minutes: 0,
     seconds: 0,
+    isPast: false
   });
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      const now = new Date();
-      const difference = targetDate.getTime() - now.getTime();
-      
-      const days = Math.max(0, Math.floor(difference / (1000 * 60 * 60 * 24)));
-      const hours = Math.max(0, Math.floor((difference / (1000 * 60 * 60)) % 24));
-      const minutes = Math.max(0, Math.floor((difference / 1000 / 60) % 60));
-      const seconds = Math.max(0, Math.floor((difference / 1000) % 60));
+    const calculateTimeLeft = () => {
+      const now = new Date().getTime();
+      const difference = targetDate.getTime() - now;
 
-      setTimeLeft({ days, hours, minutes, seconds });
-    }, 1000);
+      if (difference <= 0) {
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0, isPast: true });
+        return;
+      }
+
+      setTimeLeft({
+        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+        minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
+        seconds: Math.floor((difference % (1000 * 60)) / 1000),
+        isPast: false
+      });
+    };
+
+    calculateTimeLeft();
+    const timer = setInterval(calculateTimeLeft, 1000);
 
     return () => clearInterval(timer);
   }, [targetDate]);
 
+  if (timeLeft.isPast) {
+    return (
+      <div className="w-full bg-[#1A2216] py-32 px-6 border-y border-[#C6AA76]/20">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="font-display text-5xl sm:text-7xl text-[#FAF8F5] mb-6">Today is the Day</h2>
+          <p className="font-serif italic text-2xl text-[#C6AA76]">Our beautiful beginning starts now.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex flex-wrap justify-center gap-4 sm:gap-6 lg:gap-10 py-6">
-      {[
-        { label: 'Days', value: timeLeft.days },
-        { label: 'Hours', value: timeLeft.hours },
-        { label: 'Minutes', value: timeLeft.minutes },
-        { label: 'Seconds', value: timeLeft.seconds },
-      ].map((item, i) => (
+    <div className="w-full bg-[#1A2216] py-32 px-6 border-y border-[#C6AA76]/20 relative overflow-hidden flex flex-col justify-center min-h-[70vh]">
+      <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-10 pointer-events-none z-0" />
+      
+      {/* Background Image */}
+      <div className="absolute inset-0 pointer-events-none z-0">
+        <img src="/00.jpg" alt="" className="w-full h-full object-cover opacity-40 mix-blend-overlay" />
+      </div>
+
+      {/* Center Oval Mask (Optional if they wanted oval) */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0 opacity-30">
+        <div className="w-64 h-96 sm:w-[400px] sm:h-[500px] rounded-[50%] bg-[#C6AA76] blur-[100px]" />
+      </div>
+
+      <div className="max-w-4xl mx-auto relative z-10 text-center w-full">
+        {/* Custom Crest Logo */}
+        <div className="mb-16 relative w-40 sm:w-48 mx-auto flex justify-center">
+          <motion.img 
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1.5 }}
+            src="/bgr.png" 
+            alt="Ann and Crishan Crest" 
+            className="w-full h-auto object-contain opacity-90"
+            style={{ filter: 'drop-shadow(0 0 10px rgba(255,255,255,0.1))' }}
+          />
+        </div>
+
         <motion.div 
-          key={item.label}
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-50px" }}
-          transition={{ delay: i * 0.15, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          className="flex flex-col items-center min-w-[90px] sm:min-w-[130px] relative group"
+          viewport={{ once: true }}
+          transition={{ duration: 1 }}
+          className="flex flex-wrap justify-center gap-6 sm:gap-12"
         >
-          {/* Glass background arch */}
-          <div className="absolute inset-0 bg-white/60 backdrop-blur-md border border-brand-beige/40 shadow-[0_15px_30px_rgba(176,137,104,0.1)] rounded-[3rem_3rem_1rem_1rem] sm:rounded-[4rem_4rem_1.5rem_1.5rem] group-hover:shadow-[0_20px_40px_rgba(176,137,104,0.2)] transition-all duration-700 ease-out group-hover:-translate-y-3 pointer-events-none" />
-          
-          <div className="relative pt-10 pb-8 px-4 flex flex-col items-center w-full z-10 transition-transform duration-700 group-hover:-translate-y-3">
-            {/* Elegant number */}
-            <span className="text-5xl sm:text-6xl lg:text-7xl font-display font-medium text-brand-beige-deep mb-4 drop-shadow-[0_2px_4px_rgba(176,137,104,0.3)] tabular-nums tracking-wide">
-              {String(item.value).padStart(2, '0')}
-            </span>
-            {/* Divider line */}
-            <div className="w-10 h-[1.5px] bg-gradient-to-r from-transparent via-brand-beige-deep/50 to-transparent mb-4" />
-            {/* Label */}
-            <span className="text-[10px] sm:text-xs uppercase tracking-[0.4em] text-stone-600 font-semibold">{item.label}</span>
-          </div>
+          {Object.entries({
+            Days: timeLeft.days,
+            Hours: timeLeft.hours,
+            Minutes: timeLeft.minutes,
+            Seconds: timeLeft.seconds
+          }).map(([label, value]) => (
+            <div key={label} className="flex flex-col items-center">
+              <span className="font-display text-5xl sm:text-7xl text-[#FAF8F5] mb-4 w-20 sm:w-32">
+                {value.toString().padStart(2, '0')}
+              </span>
+              <div className="w-8 h-px bg-[#C6AA76]/50 mb-4" />
+              <span className="font-sans text-[10px] sm:text-xs uppercase tracking-[0.3em] text-[#C6AA76]">
+                {label}
+              </span>
+            </div>
+          ))}
         </motion.div>
-      ))}
+      </div>
     </div>
   );
 };

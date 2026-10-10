@@ -2,19 +2,19 @@
 @import "tailwindcss";
 
 @theme {
-  /* Royal Maroon & Emerald Color Palette */
-  --color-brand-beige: #097969; /* Rich Emerald */
-  --color-brand-beige-deep: #722F37; /* Deep Maroon / Wine */
-  --color-brand-champagne: #FDFBF7; /* Ivory */
-  --color-brand-ivory: #FAF9F6; /* Cream */
-  --color-brand-gold: #D4AF37; /* Metallic Gold */
-  --color-brand-gold-light: #F3E5AB;
-  --color-brand-mocha: #3B1C22; /* Very dark maroon for text */
-  --color-brand-sand: #EAE3D2; /* Light Sand */
+  /* Cinematic Romantic Film Palette */
+  --color-brand-beige: #2C3527; /* Muted forest green */
+  --color-brand-beige-deep: #1A2216; /* Deep forest green */
+  --color-brand-champagne: #F5EFEB; /* Warm champagne */
+  --color-brand-ivory: #FAF8F5; /* Ivory */
+  --color-brand-gold: #C6AA76; /* Muted gold */
+  --color-brand-gold-light: #E0CFA9;
+  --color-brand-mocha: #3A2B24; /* Cinematic brown */
+  --color-brand-sand: #E6DFD3; /* Cinematic warm grey/sand */
 
   --font-serif: "Cormorant Garamond", serif;
-  --font-display: "Great Vibes", cursive;
-  --font-sans: "Inter", sans-serif;
+  --font-display: "Playfair Display", serif; /* Changed to Playfair for a more editorial movie feel */
+  --font-sans: "Montserrat", sans-serif; /* Clean minimal sans */
   --font-playfair: "Playfair Display", serif;
 }
 
@@ -67,8 +67,8 @@ html, body {
   color: var(--color-brand-mocha) !important;
 }
 .text-stone-500 {
-  color: #722F37 !important; /* Maroon */
+  color: var(--color-brand-beige) !important;
 }
 .text-stone-400 {
-  color: #097969 !important; /* Emerald */
+  color: var(--color-brand-beige-deep) !important;
 }

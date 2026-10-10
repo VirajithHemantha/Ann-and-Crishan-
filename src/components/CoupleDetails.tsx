@@ -1,104 +1,126 @@
 import React from 'react';
-import { motion } from 'motion/react';
-import { Sparkles, Heart } from 'lucide-react';
+import { motion, useScroll, useTransform } from 'motion/react';
+import { useRef } from 'react';
+import { ScratchCard } from './ScratchCard';
 
 export const CoupleDetails: React.FC = () => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end start"]
+  });
+
+  const clipPath = useTransform(scrollYProgress, [0.1, 0.4], ["inset(20% 20% 20% 20%)", "inset(0% 0% 0% 0%)"]);
+  const scale = useTransform(scrollYProgress, [0.1, 0.6], [1.1, 1]);
+  const opacity = useTransform(scrollYProgress, [0.1, 0.3], [0, 1]);
+
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 relative">
-      {/* Decorative ambient background */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-gradient-radial from-brand-beige/15 to-transparent rounded-full blur-[100px] pointer-events-none" />
-
-      <div className="text-center mb-16 sm:mb-24 relative z-10">
+    <div className="w-full relative bg-brand-ivory" ref={containerRef}>
+      
+      {/* 4. Second Photo — Cinematic Reveal */}
+      <div className="relative h-screen w-full flex items-center justify-center overflow-hidden bg-brand-beige-deep">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1 }}
+          className="absolute inset-0 w-full h-full"
+          style={{ clipPath }}
         >
-          <div className="inline-flex items-center gap-4 mb-6 mt-4">
-            <div className="w-12 sm:w-20 h-[1px] bg-gradient-to-r from-transparent to-brand-beige-deep/60" />
-            <span className="text-brand-beige-deep uppercase tracking-[0.5em] text-[11px] font-semibold font-sans drop-shadow-sm">The Protagonists</span>
-            <div className="w-12 sm:w-20 h-[1px] bg-gradient-to-l from-transparent to-brand-beige-deep/60" />
-          </div>
-          <h2 className="text-5xl sm:text-7xl font-display text-stone-800 tracking-tight drop-shadow-sm">
-            Isuri <span className="italic text-brand-beige-deep font-light mx-2">&</span>&nbsp;Duvindu
-          </h2>
-        </motion.div>
-      </div>
-
-      <div className="flex flex-col lg:flex-row items-center justify-center gap-12 lg:gap-8 relative z-10">
-        {/* Groom Details (Left on Desktop, Bottom on Mobile) */}
-        <motion.div
-          initial={{ opacity: 0, x: -30 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1, ease: "easeOut", delay: 0.2 }}
-          className="text-center lg:text-right flex-1 lg:pr-10 order-4 lg:order-1"
-        >
-          <div className="mb-4 flex flex-col items-center lg:items-end">
-            <span className="text-brand-beige-deep uppercase tracking-[0.4em] text-[10px] font-bold mb-3 block">The Groom</span>
-            <h3 className="text-4xl sm:text-5xl font-display text-stone-800 mb-2 drop-shadow-sm">Duvindu</h3>
-            <p className="text-stone-500/90 font-serif italic text-base sm:text-lg">Son of Mr & Mrs Abeysekara</p>
-          </div>
-          <div className="hidden lg:flex justify-end mt-8">
-            <Heart className="w-6 h-6 text-brand-beige/60 fill-brand-beige/20 transform hover:scale-110 transition-transform cursor-pointer" />
-          </div>
-        </motion.div>
-
-        {/* Center Couple Image (Arch Design) */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
-          whileInView={{ opacity: 1, scale: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1.2, ease: "easeOut" }}
-          className="relative px-4 sm:px-0 order-1 lg:order-2 flex-shrink-0 group"
-        >
-          {/* Glowing border effect */}
-          <div className="absolute -inset-2 bg-gradient-to-b from-brand-beige-deep/30 to-transparent rounded-[12rem_12rem_1rem_1rem] blur-xl opacity-60 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
-
-          <div className="relative w-[300px] h-[400px] sm:w-[360px] sm:h-[500px] lg:w-[420px] lg:h-[580px] rounded-[12rem_12rem_16px_16px] overflow-hidden border-[6px] border-white/90 shadow-[0_20px_50px_rgba(176,137,104,0.2)] bg-brand-champagne mx-auto z-10 transition-transform duration-700 group-hover:-translate-y-2">
-            <img
-              src="/123.jpg"
-              onError={(e) => {
-                e.currentTarget.src = "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&q=80&w=800&h=1000";
-                e.currentTarget.onerror = null;
-              }}
-              alt="Isuri and Duvindu"
-              className="w-full h-full object-cover mix-blend-multiply transition-transform duration-[1.5s] ease-out group-hover:scale-105"
+          <motion.div className="w-full h-full" style={{ scale }}>
+            <img 
+              src="/image 2.jpeg" 
+              alt="Ann and Crishan" 
+              className="w-full h-full object-cover"
+              style={{ objectPosition: 'center 40%' }}
             />
-            {/* Elegant inner shadow & overlay */}
-            <div className="absolute inset-0 shadow-[inset_0_0_40px_rgba(0,0,0,0.1)] pointer-events-none" />
-            <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-brand-beige-deep/30 to-transparent pointer-events-none mix-blend-overlay" />
-          </div>
-
-          {/* Floating Sparkles decoration */}
-          <Sparkles className="absolute top-8 left-0 w-8 h-8 text-brand-gold animate-pulse drop-shadow-sm z-20" />
-          <Sparkles className="absolute bottom-10 -right-4 w-6 h-6 text-brand-beige animate-pulse delay-300 drop-shadow-sm z-20" />
+          </motion.div>
+          {/* Subtle film-grain overlay */}
+          <div className="absolute inset-0 opacity-20 mix-blend-overlay pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]" />
+          {/* Cinematic lighting gradient */}
+          <div className="absolute inset-0 bg-gradient-to-t from-brand-mocha/90 via-brand-mocha/20 to-transparent" />
         </motion.div>
 
-        {/* Mobile divider between image and groom */}
-        <div className="lg:hidden order-3 w-full flex justify-center py-4 opacity-50">
-          <div className="w-1/2 h-px bg-gradient-to-r from-transparent via-brand-beige-deep/40 to-transparent" />
-        </div>
-
-        {/* Bride Details (Right) */}
-        <motion.div
-          initial={{ opacity: 0, x: 30 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1, ease: "easeOut", delay: 0.4 }}
-          className="text-center lg:text-left flex-1 lg:pl-10 order-2 lg:order-3"
+        <motion.div 
+          className="relative z-10 text-center px-6 max-w-3xl mt-auto pb-32"
+          style={{ opacity }}
         >
-          <div className="mb-4 flex flex-col items-center lg:items-start">
-            <span className="text-brand-beige-deep uppercase tracking-[0.4em] text-[10px] font-bold mb-3 block">The Bride</span>
-            <h3 className="text-4xl sm:text-5xl font-display text-stone-800 mb-2 drop-shadow-sm">Isuri</h3>
-            <p className="text-stone-500/90 font-serif italic text-base sm:text-lg">Daughter of Mr & Mrs Perera</p>
+          <p className="font-serif italic text-2xl sm:text-4xl text-brand-champagne drop-shadow-lg leading-relaxed">
+            “Two hearts, one beautiful journey, a lifetime of memories yet to come.”
+          </p>
+        </motion.div>
+      </div>
+
+      {/* 5. Our Story — Editorial Film-Strip Section - skipping as per instructions, or maybe add a small one here? User said: "Create a stylish photo-led section inspired by a romantic movie scrapbook... Include both supplied photos... Use a combination of horizontal film-strip composition..."
+      Actually I should create this in a separate component or here. Let's create it in a separate component if needed. But let's add Family details here.
+      */}
+
+      {/* 6. Family Details */}
+      <div className="py-24 sm:py-32 relative flex justify-center px-4 overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none">
+          <img src="/999.jpg" alt="" className="w-full h-full object-cover opacity-60" />
+        </div>
+        
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 1 }}
+          className="bg-white/30 backdrop-blur-md p-10 sm:p-16 max-w-4xl w-full rounded-sm border border-brand-gold/30 shadow-[0_20px_40px_rgba(44,53,39,0.1)] relative"
+        >
+          {/* Elegant Botanical SVG Corners */}
+          <div className="absolute top-4 left-4 w-12 h-12 opacity-40 text-brand-gold">
+            <svg viewBox="0 0 100 100" fill="currentColor">
+              <path d="M10,0 C10,50 50,90 100,90 L100,100 C40,100 0,60 0,0 L10,0 Z" />
+              <path d="M20,10 C30,30 50,40 70,40 C50,40 30,50 20,70 C10,50 0,40 20,10 Z" />
+            </svg>
           </div>
-          <div className="hidden lg:flex justify-start mt-8">
-            <Heart className="w-6 h-6 text-brand-beige/60 fill-brand-beige/20 transform hover:scale-110 transition-transform cursor-pointer" />
+          <div className="absolute bottom-4 right-4 w-12 h-12 opacity-40 text-brand-gold rotate-180">
+            <svg viewBox="0 0 100 100" fill="currentColor">
+              <path d="M10,0 C10,50 50,90 100,90 L100,100 C40,100 0,60 0,0 L10,0 Z" />
+              <path d="M20,10 C30,30 50,40 70,40 C50,40 30,50 20,70 C10,50 0,40 20,10 Z" />
+            </svg>
+          </div>
+          
+          <div className="text-center mb-16 relative z-10">
+            <span className="font-sans uppercase tracking-[0.4em] text-xs text-brand-beige mb-4 block">The Families</span>
+            <div className="w-12 h-px bg-brand-gold/50 mx-auto mb-12" />
+            
+            {/* Oval Scratch Reveal Card */}
+            <div className="mb-12 w-48 h-64 sm:w-64 sm:h-80 mx-auto">
+              <ScratchCard imageSrc="/image 1.jpeg" text="Scratch to reveal" />
+            </div>
+          </div>
+
+          <div className="flex flex-col md:flex-row gap-16 md:gap-8 justify-between text-center">
+            
+            {/* Groom's Parents */}
+            <motion.div 
+              initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: 0.3, duration: 1 }}
+              className="flex-1"
+            >
+              <h3 className="font-display text-3xl text-brand-mocha mb-8">Groom's Parents</h3>
+              <div className="space-y-4 font-serif text-lg text-brand-beige">
+                <p>Mr. W.P. Joseph Nihal Laxman Fernando</p>
+                <div className="w-4 h-px bg-brand-gold/40 mx-auto" />
+                <p>Mrs. S. Lalitha</p>
+              </div>
+            </motion.div>
+
+            {/* Vertical Separator */}
+            <div className="hidden md:block w-px bg-gradient-to-b from-transparent via-brand-gold/30 to-transparent" />
+
+            {/* Bride's Parents */}
+            <motion.div 
+              initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: 0.5, duration: 1 }}
+              className="flex-1"
+            >
+              <h3 className="font-display text-3xl text-brand-mocha mb-8">Bride's Parent</h3>
+              <div className="space-y-4 font-serif text-lg text-brand-beige">
+                <p>Mr. W.A. Suresh Kumara</p>
+              </div>
+            </motion.div>
+
           </div>
         </motion.div>
       </div>
+
     </div>
   );
 };
