@@ -10,6 +10,7 @@ import { CoupleDetails } from './components/CoupleDetails';
 import { Location } from './components/Location';
 import { Countdown } from './components/Countdown';
 import { RSVPForm } from './components/RSVPForm';
+import { WishesSection } from './components/WishesSection';
 
 export default function App() {
   const [appState, setAppState] = useState<'envelope' | 'video' | 'invitation'>('envelope');
@@ -98,6 +99,9 @@ export default function App() {
       <Location />
       <Countdown targetDate={weddingDate} />
       <RSVPForm />
+      <div className="bg-brand-ivory py-20 sm:py-28">
+        <WishesSection />
+      </div>
 
       {/* 11. Final scene — movie ending */}
       <footer className="relative h-[80vh] flex items-center justify-center overflow-hidden bg-brand-mocha text-brand-champagne">

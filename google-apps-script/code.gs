@@ -1,107 +1,163 @@
-const SPREADSHEET_ID = '1jMa12xeTFbfdR5s3NAnYyQT8izPZ-8GAx82X_5i04EE';
+/**
+ * Ann & Crishan — Google Apps Script backend for RSVP and Wishes.
+ *
+ * Paste this whole file into Extensions > Apps Script > Code.gs of the sheet:
+ * https://docs.google.com/spreadsheets/d/1pAXX5tm_ewCTtlHY8gLLMyK9XWIvG9eXPeItC7DNI2o/edit
+ *
+ * The "RSVP" and "Wishes" tabs (with headers) are created automatically on the
+ * first submission. You can also run `setupSheets` once from the editor.
+ */
 
+var SPREADSHEET_ID = '1pAXX5tm_ewCTtlHY8gLLMyK9XWIvG9eXPeItC7DNI2o';
+
+var SHEETS = {
+  RSVP: {
+    name: 'RSVP',
+    headers: ['Timestamp', 'Full Name', 'Guests', 'Dietary Notes', 'Attendance'],
+    fields: ['name', 'guests', 'dietary', 'attendance'],
+  },
+  WISHES: {
+    name: 'Wishes',
+    headers: ['Timestamp', 'Guest Name', 'Message'],
+    fields: ['name', 'message'],
+  },
+};
+
+var HEADER_BG = '#3A2B24';
+var HEADER_FG = '#FAF8F5';
+
+/** Receives form submissions from the website. */
 function doPost(e) {
+  var lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+
   try {
-    const payload = parsePayload_(e);
-    const sheetKey = String(payload.sheet || '').toUpperCase();
-
-    if (sheetKey !== 'RSVP' && sheetKey !== 'WISH') {
-      return jsonResponse_({ ok: false, error: 'Invalid sheet. Use RSVP or WISH.' });
+    var payload = parsePayload_(e);
+    var config = resolveSheet_(payload.sheet);
+    if (!config) {
+      return jsonResponse_({ ok: false, error: 'Invalid sheet. Use RSVP or Wishes.' });
     }
 
-    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-    const sheet = getOrCreateSheet_(ss, sheetKey);
-
-    if (sheetKey === 'RSVP') {
-      ensureHeaders_(sheet, ['Timestamp', 'Name', 'Phone', 'Guests', 'Attendance', 'DietaryRestrictions']);
-      sheet.appendRow([
-        new Date(),
-        payload.name || '',
-        payload.phone || payload.email || '',
-        payload.guests || '',
-        payload.attendance || '',
-        payload.dietaryRestrictions || '',
-      ]);
-    } else {
-      ensureHeaders_(sheet, ['Timestamp', 'Name', 'Message']);
-      sheet.appendRow([
-        new Date(),
-        payload.name || '',
-        payload.message || '',
-      ]);
+    var sheet = getOrCreateSheet_(config);
+    var row = [new Date()];
+    for (var i = 0; i < config.fields.length; i++) {
+      row.push(sanitize_(payload[config.fields[i]]));
     }
+    sheet.appendRow(row);
 
-    return jsonResponse_({ ok: true });
+    return jsonResponse_({ ok: true, row: sheet.getLastRow() });
   } catch (error) {
-    return jsonResponse_({
-      ok: false,
-      error: String(error && error.message ? error.message : error),
-    });
+    return jsonResponse_({ ok: false, error: String(error && error.message ? error.message : error) });
+  } finally {
+    lock.releaseLock();
   }
 }
 
-function doGet() {
-  return jsonResponse_({
-    ok: true,
-    message: 'Wedding form endpoint is running.',
-  });
+/**
+ * GET ?sheet=Wishes returns the latest wishes (newest first) so the website
+ * can display them. Any other GET is a health check.
+ */
+function doGet(e) {
+  var params = (e && e.parameter) || {};
+  var config = resolveSheet_(params.sheet);
+
+  if (config && config.name === SHEETS.WISHES.name) {
+    var sheet = getOrCreateSheet_(config);
+    var lastRow = sheet.getLastRow();
+    var wishes = [];
+
+    if (lastRow > 1) {
+      var values = sheet.getRange(2, 1, lastRow - 1, 3).getValues();
+      for (var i = values.length - 1; i >= 0; i--) {
+        if (!values[i][1] && !values[i][2]) continue;
+        wishes.push({
+          createdAt: values[i][0] instanceof Date ? values[i][0].toISOString() : String(values[i][0]),
+          name: String(values[i][1]),
+          message: String(values[i][2]),
+        });
+        if (wishes.length >= 100) break;
+      }
+    }
+
+    return jsonResponse_({ ok: true, wishes: wishes });
+  }
+
+  return jsonResponse_({ ok: true, message: 'Ann & Crishan wedding endpoint is running.' });
+}
+
+/** Run once from the Apps Script editor to create both tabs up front (optional). */
+function setupSheets() {
+  getOrCreateSheet_(SHEETS.RSVP);
+  getOrCreateSheet_(SHEETS.WISHES);
+}
+
+function resolveSheet_(value) {
+  var key = String(value || '').trim().toUpperCase();
+  if (key === 'RSVP') return SHEETS.RSVP;
+  if (key === 'WISHES' || key === 'WISH') return SHEETS.WISHES;
+  return null;
+}
+
+function getOrCreateSheet_(config) {
+  var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  var sheet = ss.getSheetByName(config.name);
+  if (!sheet) {
+    sheet = ss.insertSheet(config.name);
+  }
+
+  if (sheet.getLastRow() === 0) {
+    var cols = config.headers.length;
+    sheet.getRange(1, 1, 1, cols)
+      .setValues([config.headers])
+      .setFontWeight('bold')
+      .setBackground(HEADER_BG)
+      .setFontColor(HEADER_FG)
+      .setHorizontalAlignment('center');
+    sheet.setFrozenRows(1);
+    sheet.getRange('A:A').setNumberFormat('yyyy-mm-dd hh:mm:ss');
+    sheet.setColumnWidth(1, 170);
+    for (var c = 2; c <= cols; c++) {
+      sheet.setColumnWidth(c, config.headers[c - 1] === 'Message' ? 420 : 180);
+    }
+    if (config.name === SHEETS.WISHES.name) {
+      sheet.getRange('C:C').setWrap(true);
+    }
+  }
+
+  return sheet;
 }
 
 function parsePayload_(e) {
-  const params = e && e.parameter ? e.parameter : {};
+  var params = (e && e.parameter) || {};
+  if (Object.keys(params).length > 0) return params;
 
-  if (Object.keys(params).length > 0) {
-    return params;
-  }
-
-  const contents = e && e.postData && e.postData.contents ? e.postData.contents : '';
-  if (!contents) {
-    return {};
-  }
-
-  if (contents.indexOf('=') !== -1 && contents.indexOf('{') !== 0) {
-    return parseQueryString_(contents);
-  }
+  var contents = e && e.postData && e.postData.contents ? e.postData.contents : '';
+  if (!contents) return {};
 
   try {
     return JSON.parse(contents);
   } catch (_error) {
-    return {};
+    return parseQueryString_(contents);
   }
 }
 
 function parseQueryString_(query) {
-  const out = {};
-  const pairs = String(query).split('&');
-
-  for (let i = 0; i < pairs.length; i++) {
-    const part = pairs[i];
-    if (!part) continue;
-
-    const idx = part.indexOf('=');
-    const rawKey = idx >= 0 ? part.slice(0, idx) : part;
-    const rawValue = idx >= 0 ? part.slice(idx + 1) : '';
-    const key = decodeURIComponent(rawKey.replace(/\+/g, ' '));
-    const value = decodeURIComponent(rawValue.replace(/\+/g, ' '));
-
-    out[key] = value;
+  var out = {};
+  var pairs = String(query).split('&');
+  for (var i = 0; i < pairs.length; i++) {
+    if (!pairs[i]) continue;
+    var idx = pairs[i].indexOf('=');
+    var key = idx >= 0 ? pairs[i].slice(0, idx) : pairs[i];
+    var value = idx >= 0 ? pairs[i].slice(idx + 1) : '';
+    out[decodeURIComponent(key.replace(/\+/g, ' '))] = decodeURIComponent(value.replace(/\+/g, ' '));
   }
-
   return out;
 }
 
-function getOrCreateSheet_(ss, name) {
-  let sheet = ss.getSheetByName(name);
-  if (!sheet) {
-    sheet = ss.insertSheet(name);
-  }
-  return sheet;
-}
-
-function ensureHeaders_(sheet, headers) {
-  if (sheet.getLastRow() === 0) {
-    sheet.appendRow(headers);
-  }
+/** Prevents values like "=HYPERLINK(...)" from being run as sheet formulas. */
+function sanitize_(value) {
+  var str = String(value == null ? '' : value).trim().slice(0, 2000);
+  return /^[=+\-@]/.test(str) ? "'" + str : str;
 }
 
 function jsonResponse_(data) {

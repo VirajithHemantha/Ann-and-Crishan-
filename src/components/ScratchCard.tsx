@@ -58,7 +58,7 @@ export const ScratchCard: React.FC<ScratchCardProps> = ({
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
     return () => window.removeEventListener('resize', resizeCanvas);
-  }, [coverColor, text]);
+  }, [imageSrc, coverColor, text]);
 
   const scratch = (e: React.MouseEvent | React.TouchEvent | MouseEvent | TouchEvent) => {
     if (!isDrawing || isRevealed) return;

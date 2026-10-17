@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Send, Loader2, Sparkles } from 'lucide-react';
+import { fetchWishes, submitToSheet } from '../lib/sheets';
 
 interface Wish {
   id: string;
@@ -24,23 +25,28 @@ export const WishesSection: React.FC = () => {
   const [formData, setFormData] = useState({ name: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  useEffect(() => {
+    fetchWishes()
+      .then((rows) =>
+        setWishes(rows.map((row, i) => ({
+          id: `${row.createdAt}-${i}`,
+          name: row.name,
+          message: row.message,
+          createdAt: new Date(row.createdAt),
+        })))
+      )
+      .catch((error) => console.error('Error loading wishes: ', error));
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name || !formData.message) return;
     setIsSubmitting(true);
 
     try {
-      // Send data to Google Sheets
-      const scriptUrl = 'https://script.google.com/macros/s/AKfycbyay20jbF63BRUj8JGGbUbYkYS3Us-DpLZc2Hs34si_qKJgxs_81xpNBniXsBNFsYOt7g/exec';
-      const payload = new FormData();
-      payload.append('sheet', 'Wishes');
-      payload.append('name', formData.name);
-      payload.append('message', formData.message);
-
-      await fetch(scriptUrl, {
-        method: 'POST',
-        mode: 'no-cors',
-        body: payload,
+      await submitToSheet('Wishes', {
+        name: formData.name,
+        message: formData.message,
       });
 
       const newWish: Wish = {

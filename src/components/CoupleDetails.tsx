@@ -18,27 +18,27 @@ export const CoupleDetails: React.FC = () => {
     <div className="w-full relative bg-brand-ivory" ref={containerRef}>
       
       {/* 4. Second Photo — Cinematic Reveal */}
-      <div className="relative h-screen w-full flex items-center justify-center overflow-hidden bg-brand-beige-deep">
+      <div className="relative h-screen w-full flex items-start justify-center overflow-hidden bg-brand-beige-deep">
         <motion.div
           className="absolute inset-0 w-full h-full"
           style={{ clipPath }}
         >
           <motion.div className="w-full h-full" style={{ scale }}>
             <img 
-              src="/image 2.jpeg" 
+              src="/image 1.jpeg" 
               alt="Ann and Crishan" 
               className="w-full h-full object-cover"
-              style={{ objectPosition: 'center 40%' }}
+              style={{ objectPosition: 'center center' }}
             />
           </motion.div>
           {/* Subtle film-grain overlay */}
           <div className="absolute inset-0 opacity-20 mix-blend-overlay pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]" />
-          {/* Cinematic lighting gradient */}
-          <div className="absolute inset-0 bg-gradient-to-t from-brand-mocha/90 via-brand-mocha/20 to-transparent" />
+          {/* Cinematic lighting gradient (darker at the top so the wording stays readable) */}
+          <div className="absolute inset-0 bg-gradient-to-b from-brand-mocha/90 via-brand-mocha/20 to-transparent" />
         </motion.div>
 
         <motion.div 
-          className="relative z-10 text-center px-6 max-w-3xl mt-auto pb-32"
+          className="relative z-10 text-center px-6 max-w-3xl pt-24 sm:pt-32"
           style={{ opacity }}
         >
           <p className="font-serif italic text-2xl sm:text-4xl text-brand-champagne drop-shadow-lg leading-relaxed">
@@ -84,7 +84,7 @@ export const CoupleDetails: React.FC = () => {
             
             {/* Oval Scratch Reveal Card */}
             <div className="mb-12 w-48 h-64 sm:w-64 sm:h-80 mx-auto">
-              <ScratchCard imageSrc="/image 1.jpeg" text="Scratch to reveal" />
+              <ScratchCard imageSrc="/x.jpg" text="Scratch to reveal" />
             </div>
           </div>
 
