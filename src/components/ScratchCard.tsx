@@ -45,11 +45,13 @@ export const ScratchCard: React.FC<ScratchCardProps> = ({
           ctx.filter = 'none';
           
           // Add text
-          ctx.font = '14px "Inter", sans-serif';
+          ctx.font = '600 13px "Cinzel", serif';
+          ctx.shadowColor = 'rgba(0,0,0,0.55)';
+          ctx.shadowBlur = 6;
           ctx.fillStyle = '#FFFFFF';
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
-          ctx.letterSpacing = '2px';
+          ctx.letterSpacing = '3px';
           ctx.fillText(text.toUpperCase(), canvas.width / 2, canvas.height / 2);
         };
       }

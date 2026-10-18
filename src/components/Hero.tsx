@@ -5,141 +5,248 @@ interface HeroProps {
   guestName?: string | null;
 }
 
+const ease = [0.22, 1, 0.36, 1] as const;
+
+const fadeUp = (delay: number) => ({
+  initial: { opacity: 0, y: 14 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 1.6, ease, delay },
+});
+
+// Hot-stamped gold foil
+const foil: React.CSSProperties = {
+  backgroundImage:
+    'linear-gradient(110deg, #4E3712 0%, #74561F 25%, #A07C3A 45%, #6A4D1B 65%, #957234 82%, #4E3712 100%)',
+  backgroundSize: '250% 100%',
+  WebkitBackgroundClip: 'text',
+  backgroundClip: 'text',
+  color: 'transparent',
+};
+
+// Letterpress: ink pressed into cotton paper
+const letterpress: React.CSSProperties = {
+  textShadow: '0 1px 0 rgba(255,255,255,0.6), 0 -0.5px 0 rgba(60,40,20,0.08)',
+};
+
+const INK = 'text-[#140D08]';
+const SEPIA = 'text-[#33241A]';
+const GOLD = 'text-[#5E431A]';
+
+const Hairline: React.FC<{ delay: number; side: 'left' | 'right'; className?: string }> = ({
+  delay,
+  side,
+  className = '',
+}) => (
+  <motion.span
+    initial={{ scaleX: 0 }}
+    animate={{ scaleX: 1 }}
+    transition={{ duration: 1.6, ease, delay }}
+    className={`h-px flex-1 ${side === 'left' ? 'origin-right bg-gradient-to-l' : 'origin-left bg-gradient-to-r'} from-[#74561F] to-transparent ${className}`}
+  />
+);
+
+// A few slow-rising specks of gold leaf
+const specks = [
+  { left: '18%', size: 3, dur: 14, delay: 0 },
+  { left: '32%', size: 2, dur: 18, delay: 4 },
+  { left: '50%', size: 2.5, dur: 16, delay: 8 },
+  { left: '66%', size: 2, dur: 20, delay: 2 },
+  { left: '80%', size: 3, dur: 15, delay: 6 },
+  { left: '42%', size: 1.5, dur: 22, delay: 11 },
+  { left: '74%', size: 1.5, dur: 19, delay: 13 },
+];
+
 export const Hero: React.FC<HeroProps> = ({ guestName }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollY } = useScroll();
-  const y1 = useTransform(scrollY, [0, 1000], [0, 300]);
-  const scale = useTransform(scrollY, [0, 800], [1, 1.15]);
-  const opacity = useTransform(scrollY, [0, 400], [1, 0]);
+  const y = useTransform(scrollY, [0, 1000], [0, 160]);
+  const scale = useTransform(scrollY, [0, 800], [1, 1.06]);
+  const opacity = useTransform(scrollY, [0, 450], [1, 0]);
 
   return (
-    <div ref={containerRef} className="relative h-screen flex flex-col items-center justify-start pt-20 sm:pt-32 overflow-hidden bg-brand-beige-deep">
+    <div
+      ref={containerRef}
+      className="relative h-[100svh] min-h-[640px] w-full overflow-hidden flex items-center justify-center bg-[#EFE6D6] sm:bg-[#16201A]"
+    >
+      {/* Desktop backdrop: hunter green with a candlelit vignette */}
+      <div
+        className="absolute inset-0 hidden sm:block"
+        style={{ background: 'radial-gradient(ellipse at 50% 40%, #2B3A2E 0%, #1A251D 55%, #0F1611 100%)' }}
+      />
+      <div className="absolute inset-0 hidden sm:block opacity-[0.07] mix-blend-overlay bg-[url('https://www.transparenttextures.com/patterns/linen.png')]" />
 
-      {/* Cinematic Background Image with Ken Burns effect */}
+      {/* The invitation card: full-bleed on phones, floating card on larger screens */}
       <motion.div
-        className="absolute inset-0 z-0 origin-center"
-        style={{ y: y1, scale }}
+        initial={{ opacity: 0, scale: 0.97 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 2, ease }}
+        style={{ y, scale }}
+        className="relative h-full w-full sm:h-[92vh] sm:w-auto sm:aspect-[1536/2752] sm:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.6),0_0_0_1px_rgba(198,170,118,0.25)]"
       >
-        {/* Floating Particles for Romantic Polish */}
-        <div className="absolute inset-0 pointer-events-none z-10" style={{
-          backgroundImage: 'radial-gradient(1.5px 1.5px at 10% 20%, rgba(212, 175, 55, 0.5) 1.5px, transparent 0), radial-gradient(2.5px 2.5px at 80% 50%, rgba(255, 255, 255, 0.3) 2.5px, transparent 0), radial-gradient(1px 1px at 50% 80%, rgba(212, 175, 55, 0.4) 1px, transparent 0)',
-          backgroundSize: '150px 150px',
-          animation: 'particle-drift 45s linear infinite'
-        }} />
+        {/* Stretched to fit on phones so the whole gilded frame stays visible */}
+        <img
+          src="/Gemini_Generated_Image_34rdvr34rdvr34rd.jpg"
+          alt=""
+          className="absolute inset-0 w-full h-full object-fill"
+        />
 
-        <motion.div
-          animate={{ scale: [1.02, 1.05] }}
-          transition={{ duration: 20, ease: "linear", repeat: Infinity, repeatType: "reverse" }}
-          className="w-full h-full flex items-center justify-center"
-        >
-          <img
-            src="/image 1.jpeg"
-            alt="Ann and Crishan"
-            className="w-full h-full object-contain sm:object-cover"
-            style={{ 
-              objectPosition: 'center center',
-              maxHeight: '100%',
-              maxWidth: '100%' 
-            }}
-          />
-        </motion.div>
-        
-        {/* Cinematic Grade Overlays */}
-        {/* Warmth and contrast */}
-        <div className="absolute inset-0 bg-[#4A3525] mix-blend-overlay opacity-30" />
-        {/* Soft dark gradient behind text for readability */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#1A2216]/90 via-[#1A2216]/50 to-transparent h-[70vh]" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#1A2216]/80 via-transparent to-transparent h-[40vh] bottom-0 top-auto" />
-      </motion.div>
+        {/* Warm glow behind the text block */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{ background: 'radial-gradient(ellipse 55% 40% at 50% 48%, rgba(255,251,242,0.7), transparent 72%)' }}
+        />
 
-      {/* Main Content */}
-      <motion.div
-        className="relative z-10 text-center px-4 sm:px-6 w-full max-w-5xl mt-8 sm:mt-12"
-        style={{ opacity }}
-      >
+        {/* Slow light sweep across the paper */}
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 2, ease: [0.22, 1, 0.36, 1], delay: 1 }}
-          className="flex flex-col items-center"
+          className="absolute inset-0 pointer-events-none mix-blend-soft-light"
+          style={{
+            background: 'linear-gradient(115deg, transparent 35%, rgba(255,248,230,0.6) 50%, transparent 65%)',
+            backgroundSize: '300% 100%',
+          }}
+          animate={{ backgroundPosition: ['120% 0%', '-120% 0%'] }}
+          transition={{ duration: 9, repeat: Infinity, repeatDelay: 4, ease: 'easeInOut' }}
+        />
+
+        {/* Gold leaf specks */}
+        <div className="absolute inset-[8%] pointer-events-none overflow-hidden">
+          {specks.map((s, i) => (
+            <motion.span
+              key={i}
+              className="absolute bottom-0 rounded-full bg-[#C6A766]"
+              style={{ left: s.left, width: s.size, height: s.size, boxShadow: '0 0 6px rgba(214,184,120,0.8)' }}
+              animate={{ y: ['0%', '-1200%'], opacity: [0, 0.9, 0], x: [0, 8, -6, 0] }}
+              transition={{ duration: s.dur, delay: s.delay, repeat: Infinity, ease: 'linear' }}
+            />
+          ))}
+        </div>
+
+        {/* Printed content, held inside the frame's inner panel */}
+        <motion.div
+          style={{ opacity }}
+          className="absolute inset-x-[12%] top-[9%] bottom-[15%] flex flex-col items-center justify-center text-center"
         >
-          <img 
-            src="/bgr.png" 
-            alt="Ann and Crishan Crest" 
-            className="w-24 h-auto sm:w-32 mb-6 sm:mb-8 opacity-90 object-contain"
-            style={{ filter: 'drop-shadow(0 0 10px rgba(255,255,255,0.1))' }}
+          {/* Crest */}
+          <motion.img
+            {...fadeUp(0.5)}
+            src="/bgr.png"
+            alt="Ann and Crishan Crest"
+            className="w-[min(26vw,13svh)] max-w-[7.5rem] sm:w-28 h-auto object-contain mix-blend-multiply"
+            style={{ filter: 'sepia(0.75) saturate(1.1) hue-rotate(-8deg) brightness(0.7) contrast(1.2)' }}
           />
-          <span className="text-[#E6DFD3] uppercase tracking-[0.3em] sm:tracking-[0.4em] text-[10px] sm:text-sm font-sans mb-4 sm:mb-6 block drop-shadow-md opacity-90">
+
+          <motion.p
+            {...fadeUp(0.9)}
+            style={letterpress}
+            className={`font-engraved font-semibold uppercase tracking-[0.28em] text-[9.5px] sm:text-[11px] ${GOLD} mt-[2.4vh] sm:mt-5`}
+          >
             Together with their families
-          </span>
+          </motion.p>
 
-          <h1 className="flex items-center justify-center flex-wrap text-[3.5rem] leading-[1.1] sm:text-7xl lg:text-[8.5rem] font-display text-[#FAF8F5] mb-4 sm:mb-6 drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)] tracking-wide relative">
-            <motion.span 
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 1.5, delay: 1.2 }}
+          <motion.p
+            {...fadeUp(1.1)}
+            style={letterpress}
+            className={`font-serif italic font-medium text-[16px] sm:text-[18px] ${SEPIA} leading-snug mt-[1vh] max-w-[16rem]`}
+          >
+            request the honour of your presence
+            <br />
+            at the marriage of
+          </motion.p>
+
+          {/* Names */}
+          <div className="mt-[1.6vh] sm:mt-3 flex flex-col items-center w-full">
+            <motion.h1
+              initial={{ opacity: 0, y: 18, filter: 'blur(6px)' }}
+              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              transition={{ duration: 2, ease, delay: 1.4 }}
+              style={letterpress}
+              className={`font-script ${INK} text-[min(17vw,8.5svh)] sm:text-[4.6rem] leading-[1.05] -mb-[1vh]`}
             >
               Ann
-            </motion.span>
-            <motion.span 
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 1.5, delay: 1.8 }}
-              className="font-serif italic text-[#C6AA76] mx-3 sm:mx-8 text-3xl sm:text-6xl lg:text-[7rem] font-light inline-block -translate-y-1 sm:-translate-y-4"
-            >
-              &
-            </motion.span>
-            <motion.span 
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 1.5, delay: 1.4 }}
+            </motion.h1>
+
+            <div className="flex items-center justify-center gap-3 w-[62%] my-[0.4vh]">
+              <Hairline delay={1.9} side="left" />
+              <motion.span
+                initial={{ opacity: 0, scale: 0.7 }}
+                animate={{ opacity: 1, scale: 1, backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'] }}
+                transition={{
+                  opacity: { duration: 1.4, delay: 1.9 },
+                  scale: { duration: 1.4, ease, delay: 1.9 },
+                  backgroundPosition: { duration: 6, repeat: Infinity, ease: 'easeInOut', delay: 2 },
+                }}
+                style={foil}
+                className="font-engraved font-semibold tracking-[0.3em] pl-[0.3em] text-[11px] sm:text-xs"
+              >
+                AND
+              </motion.span>
+              <Hairline delay={1.9} side="right" />
+            </div>
+
+            <motion.h1
+              initial={{ opacity: 0, y: 18, filter: 'blur(6px)' }}
+              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              transition={{ duration: 2, ease, delay: 1.7 }}
+              style={letterpress}
+              className={`font-script ${INK} text-[min(15vw,7.6svh)] sm:text-[4.2rem] leading-[1.15]`}
             >
               Crishan
-            </motion.span>
-          </h1>
-
-          <p className="text-[#E6DFD3] font-serif italic text-base sm:text-2xl tracking-wide mb-8 drop-shadow-md opacity-90 max-w-2xl mx-auto">
-            {guestName ? (
-              <>We cordially invite <span className="text-white font-semibold">{guestName}</span> to celebrate our special day with us.</>
-            ) : (
-              "Invite you to celebrate their wedding"
-            )}
-          </p>
-
-          {/* Delicate animated gold divider */}
-          <div className="flex items-center justify-center gap-4 mb-8 w-full max-w-xs">
-            <motion.div 
-              initial={{ scaleX: 0 }} 
-              animate={{ scaleX: 1 }} 
-              transition={{ delay: 2, duration: 1.5 }} 
-              className="h-[1px] flex-1 bg-gradient-to-l from-[#C6AA76] to-transparent origin-right" 
-            />
-            <div className="w-1.5 h-1.5 rotate-45 bg-[#C6AA76]" />
-            <motion.div 
-              initial={{ scaleX: 0 }} 
-              animate={{ scaleX: 1 }} 
-              transition={{ delay: 2, duration: 1.5 }} 
-              className="h-[1px] flex-1 bg-gradient-to-r from-[#C6AA76] to-transparent origin-left" 
-            />
+            </motion.h1>
           </div>
 
-          <div className="flex flex-col gap-2 text-[#FAF8F5] font-sans text-[10px] sm:text-xs uppercase tracking-[0.25em] drop-shadow-md font-light">
-            <span>Saturday, 12 December 2026</span>
-            <span className="text-[#C6AA76]">Holy Mass · 11:00 AM</span>
-            <span>St. Joseph's Church, Wennappuwa</span>
-          </div>
+          {/* Date plate */}
+          <motion.div
+            {...fadeUp(2.3)}
+            style={letterpress}
+            className="mt-[2.2vh] sm:mt-4 grid grid-cols-[1fr_auto_1fr] items-center w-full max-w-[17rem]"
+          >
+            <span className={`font-engraved font-semibold uppercase tracking-[0.2em] text-[10px] sm:text-[11px] ${SEPIA} border-y border-[#8E6E36]/70 py-1.5`}>
+              Saturday
+            </span>
+            <span className={`font-bodoni ${INK} text-[min(2.6rem,6svh)] sm:text-5xl leading-none px-4`}>12</span>
+            <span className={`font-engraved font-semibold uppercase tracking-[0.2em] text-[10px] sm:text-[11px] ${SEPIA} border-y border-[#8E6E36]/70 py-1.5`}>
+              December
+            </span>
+          </motion.div>
+          <motion.p
+            {...fadeUp(2.4)}
+            style={foil}
+            className="font-engraved font-semibold tracking-[0.55em] pl-[0.55em] text-[12px] sm:text-[13px] mt-[1vh]"
+          >
+            2026
+          </motion.p>
+
+          {/* Ceremony */}
+          <motion.div {...fadeUp(2.7)} style={letterpress} className="mt-[2vh] sm:mt-4 flex flex-col items-center">
+            <p className={`font-serif italic font-medium text-[15px] sm:text-[17px] ${SEPIA}`}>
+              Holy Mass at eleven o&rsquo;clock in the morning
+            </p>
+            <p className={`font-engraved font-semibold uppercase tracking-[0.18em] text-[12px] sm:text-[14px] ${INK} mt-[0.8vh]`}>
+              St. Joseph&rsquo;s Church
+            </p>
+            <p className={`font-serif italic font-semibold text-[14px] sm:text-[15px] ${GOLD}`}>Wennappuwa, Sri Lanka</p>
+          </motion.div>
+
+          {guestName && (
+            <motion.div {...fadeUp(3.1)} className="mt-[1.8vh] sm:mt-4 flex flex-col items-center">
+              <span className={`font-engraved font-semibold uppercase tracking-[0.28em] text-[8.5px] sm:text-[9px] ${GOLD}`}>
+                Reserved for
+              </span>
+              <span className={`font-script text-[1.7rem] sm:text-3xl ${INK} leading-tight`}>{guestName}</span>
+            </motion.div>
+          )}
         </motion.div>
-      </motion.div>
 
-      {/* Scroll Indicator */}
-      <motion.div
-        className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 3, duration: 1 }}
-      >
-        <span className="text-[9px] font-sans uppercase tracking-[0.3em] text-[#E6DFD3] font-light">Scroll to discover</span>
-        <div className="w-[1px] h-16 bg-gradient-to-b from-[#C6AA76] to-transparent animate-pulse" />
+        {/* Scroll cue inside the lower medallion */}
+        <motion.div style={{ opacity }} className="absolute bottom-[9.5%] inset-x-0 flex justify-center">
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 3.6, duration: 1 }}>
+            <motion.div
+              className="w-px h-5 sm:h-6 bg-gradient-to-b from-[#8A6A33] to-transparent"
+              animate={{ scaleY: [0.3, 1, 0.3] }}
+              transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
+              style={{ transformOrigin: 'top' }}
+            />
+          </motion.div>
+        </motion.div>
       </motion.div>
     </div>
   );

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Send, Loader2, Sparkles } from 'lucide-react';
+import { Send, Loader2 } from 'lucide-react';
 import { fetchWishes, submitToSheet } from '../lib/sheets';
 
 interface Wish {
@@ -66,88 +66,95 @@ export const WishesSection: React.FC = () => {
     }
   };
 
+  const label = 'block font-engraved font-semibold uppercase tracking-[0.28em] text-[10px] text-[#5E431A] mb-1 text-center';
+  const field = 'w-full bg-transparent border-b border-[#A8833F]/60 px-4 py-3 focus:outline-none focus:border-[#5E431A] font-serif italic font-medium text-xl text-center text-[#140D08] placeholder:text-[#5E4A39]/50 transition-colors';
+
   return (
-    <div className="max-w-4xl mx-auto px-6 relative py-12">
-      {/* Background ambient glow */}
-      <div className="absolute top-0 right-1/4 w-3/4 h-3/4 bg-brand-beige/10 blur-[120px] rounded-full pointer-events-none -z-10" />
+    <div className="relative w-full overflow-hidden bg-[#F3ECDF] py-20 sm:py-28 px-5">
+      {/* Linen paper */}
+      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,rgba(251,247,239,0.8)_0%,rgba(236,226,208,0.95)_100%)]" />
+      <div className="absolute inset-0 opacity-40 mix-blend-multiply pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/linen.png')]" />
 
-      <div className="text-center mb-16 relative">
-        <Sparkles className="absolute -top-8 left-1/2 -translate-x-1/2 w-8 h-8 text-brand-beige/40 animate-pulse" />
-        <span className="text-brand-beige-deep uppercase tracking-[0.5em] text-[10px] font-bold mb-4 block drop-shadow-sm">
-          Guestbook
-        </span>
-        <h2 className="text-5xl sm:text-7xl font-display text-stone-800 tracking-tight drop-shadow-sm">
-          Blessings & <span className="italic font-light text-brand-beige-deep">Wishes</span>
-        </h2>
-        <div className="w-16 h-[1px] bg-gradient-to-r from-transparent via-brand-beige/60 to-transparent mx-auto mt-8" />
-      </div>
+      <div className="relative max-w-3xl mx-auto">
+        {/* Heading */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1] }}
+          className="text-center mb-12 sm:mb-16"
+        >
+          <p className="font-engraved font-semibold uppercase tracking-[0.42em] pl-[0.42em] text-[11px] sm:text-xs text-[#5E431A]">
+            The Guestbook
+          </p>
+          <h2 className="font-script text-[3.2rem] sm:text-7xl leading-[1.15] text-[#140D08] mt-1">
+            Blessings &amp; Wishes
+          </h2>
+          <div className="flex items-center justify-center gap-3 w-40 mx-auto mt-3 mb-5">
+            <span className="h-px flex-1 bg-gradient-to-l from-[#8E6E36] to-transparent" />
+            <span className="w-1.5 h-1.5 rotate-45 border border-[#8E6E36]" />
+            <span className="h-px flex-1 bg-gradient-to-r from-[#8E6E36] to-transparent" />
+          </div>
+          <p className="font-serif italic font-medium text-[17px] sm:text-lg text-[#33241A] max-w-md mx-auto leading-relaxed">
+            Leave a little note or a piece of advice for our journey ahead.
+          </p>
+        </motion.div>
 
-      <div className="flex flex-col items-center">
-        
-        {/* Beautiful Centered Form Box */}
-        <motion.div 
+        {/* Writing desk card */}
+        <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 1, ease: 'easeOut' }}
-          className="w-full glass p-8 sm:p-14 rounded-[3rem] border border-white/60 shadow-[0_30px_60px_rgba(176,137,104,0.1)] relative overflow-hidden bg-white/70 backdrop-blur-3xl mb-16"
+          transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+          className="bg-[#FBF7EF] p-2.5 sm:p-3 shadow-[0_30px_60px_-20px_rgba(60,40,15,0.35)] mb-14"
         >
-          {/* Subtle top reflection line */}
-          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-brand-beige to-transparent opacity-50" />
-
-          <form onSubmit={handleSubmit} className="space-y-8">
-            <div className="text-center mb-10">
-              <p className="text-stone-500 font-serif italic text-lg leading-relaxed max-w-lg mx-auto">
-                Leave a little note or a piece of advice for our journey ahead.
-              </p>
-            </div>
-
-            <div className="space-y-6">
+          <div className="border border-[#A8833F]/70 p-1.5">
+            <form onSubmit={handleSubmit} className="border border-[#A8833F]/35 px-6 py-10 sm:px-12 sm:py-12 space-y-8">
               <div>
-                <label className="block text-[10px] uppercase tracking-[0.2em] font-bold text-stone-500 mb-3 ml-2 text-left">Your Name</label>
+                <label className={label}>Your Name</label>
                 <input
                   required
                   type="text"
-                  placeholder="E.g., Uncle John"
-                  className="w-full bg-white/80 px-6 py-4 rounded-full border border-stone-200/60 focus:ring-2 focus:ring-brand-beige/30 focus:border-brand-beige-deep/40 outline-none transition-all duration-300 font-serif italic text-lg shadow-inner placeholder:text-stone-300 text-stone-700"
+                  placeholder="Aunty Maria"
+                  className={field}
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 />
               </div>
-              
+
               <div>
-                <label className="block text-[10px] uppercase tracking-[0.2em] font-bold text-stone-500 mb-3 ml-2 text-left">Your Message</label>
+                <label className={label}>Your Message</label>
                 <textarea
                   required
                   placeholder="Wishing you a lifetime of happiness..."
-                  className="w-full bg-white/80 px-6 py-5 rounded-[2rem] border border-stone-200/60 focus:ring-2 focus:ring-brand-beige/30 focus:border-brand-beige-deep/40 outline-none transition-all duration-300 h-36 resize-none font-serif italic text-lg shadow-inner placeholder:text-stone-300 text-stone-700"
+                  className={`${field} h-28 resize-none leading-relaxed`}
                   value={formData.message}
                   onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                 />
               </div>
-            </div>
 
-            <div className="pt-4 max-w-sm mx-auto">
-              <button
-                disabled={isSubmitting}
-                type="submit"
-                className="w-full bg-stone-800 text-brand-champagne py-5 rounded-full font-sans tracking-[0.3em] font-bold text-[11px] uppercase hover:bg-stone-900 transition-all duration-300 shadow-[0_10px_20px_rgba(0,0,0,0.15)] hover:shadow-[0_15px_30px_rgba(0,0,0,0.25)] active:scale-[0.98] flex items-center justify-center gap-3 disabled:opacity-70"
-              >
-                {isSubmitting ? (
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                ) : (
-                  <>
-                    <Send className="w-4 h-4 text-brand-gold" />
-                    Share Blessing
-                  </>
-                )}
-              </button>
-            </div>
-          </form>
+              <div className="pt-2 flex justify-center">
+                <button
+                  disabled={isSubmitting}
+                  type="submit"
+                  className="bg-[#1E2A20] text-[#F3E9D2] border border-[#A8833F] outline outline-1 outline-offset-[3px] outline-[#A8833F]/50 px-10 py-4 font-engraved font-semibold text-[11px] uppercase tracking-[0.3em] hover:bg-[#141C15] transition-colors flex items-center justify-center gap-3 min-w-[220px] disabled:opacity-70"
+                >
+                  {isSubmitting ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                  ) : (
+                    <>
+                      <Send className="w-3.5 h-3.5 text-[#C6AA76]" strokeWidth={1.75} />
+                      Share Blessing
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
         </motion.div>
 
-        {/* Wishes List - Stacked Centrally Below */}
-        <div className="w-full space-y-6 max-h-[800px] overflow-y-auto pr-4 scrollbar-thin">
+        {/* Wishes as handwritten notes */}
+        <div className="space-y-5 max-h-[800px] overflow-y-auto px-1 pb-2 scrollbar-thin">
           <AnimatePresence initial={false}>
             {wishes.map((wish) => (
               <motion.div
@@ -155,18 +162,21 @@ export const WishesSection: React.FC = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                className="glass p-8 sm:p-10 rounded-3xl border border-brand-beige/20 shadow-sm relative overflow-hidden group bg-white/50 backdrop-blur-sm"
+                className="relative bg-[#FBF7EF] border border-[#A8833F]/40 px-6 py-7 sm:px-10 sm:py-8 text-center shadow-[0_10px_24px_-14px_rgba(60,40,15,0.35)]"
               >
-                <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-brand-beige-deep/20 to-brand-beige/40 group-hover:from-brand-beige-deep group-hover:to-brand-beige transition-all duration-500" />
-                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 sm:gap-4 mb-4">
-                  <h4 className="font-display text-2xl text-stone-800 tracking-tight pl-2">{wish.name}</h4>
-                  <span className="text-[9px] uppercase tracking-[0.2em] text-stone-400 font-bold bg-white/60 px-3 py-1 rounded-full border border-stone-100/50">
-                    {wish.createdAt ? getRelativeTime(wish.createdAt) : 'just now'}
-                  </span>
-                </div>
-                <p className="text-stone-600 font-serif italic text-lg sm:text-lg leading-relaxed pl-2">
-                  "{wish.message}"
+                <span className="absolute top-1 left-4 font-bodoni text-6xl leading-none text-[#A8833F]/35 select-none">&ldquo;</span>
+                <p className="font-serif italic font-medium text-lg text-[#33241A] leading-relaxed">
+                  {wish.message}
                 </p>
+                <div className="flex items-center justify-center gap-3 w-24 mx-auto my-3">
+                  <span className="h-px flex-1 bg-[#A8833F]/50" />
+                  <span className="w-1 h-1 rotate-45 bg-[#8E6E36]" />
+                  <span className="h-px flex-1 bg-[#A8833F]/50" />
+                </div>
+                <h4 className="font-script text-3xl leading-tight text-[#140D08]">{wish.name}</h4>
+                <span className="font-engraved font-semibold uppercase tracking-[0.25em] text-[9px] text-[#5E431A]">
+                  {wish.createdAt ? getRelativeTime(wish.createdAt) : 'just now'}
+                </span>
               </motion.div>
             ))}
           </AnimatePresence>
