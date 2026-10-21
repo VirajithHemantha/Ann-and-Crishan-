@@ -2,28 +2,30 @@
  * Ann & Crishan — Google Apps Script backend for RSVP and Wishes.
  *
  * Paste this whole file into Extensions > Apps Script > Code.gs of the sheet:
- * https://docs.google.com/spreadsheets/d/1pAXX5tm_ewCTtlHY8gLLMyK9XWIvG9eXPeItC7DNI2o/edit
+ * https://docs.google.com/spreadsheets/d/1ZX9DmtG4u_-7OGqJhbhGa0ZteCkDEfPr4NBmXsmEl6w/edit
  *
- * The "RSVP" and "Wishes" tabs (with headers) are created automatically on the
- * first submission. You can also run `setupSheets` once from the editor.
+ * Run `setupSheets` once from the editor to create the "RSVP" and "Wishes"
+ * tabs with headers. They are also created automatically on first submission.
  */
 
-var SPREADSHEET_ID = '1pAXX5tm_ewCTtlHY8gLLMyK9XWIvG9eXPeItC7DNI2o';
+var SPREADSHEET_ID = '1ZX9DmtG4u_-7OGqJhbhGa0ZteCkDEfPr4NBmXsmEl6w';
 
 var SHEETS = {
   RSVP: {
     name: 'RSVP',
-    headers: ['Timestamp', 'Full Name', 'Guests', 'Dietary Notes', 'Attendance'],
-    fields: ['name', 'guests', 'dietary', 'attendance'],
+    headers: ['Timestamp', 'Full Name', 'Number of Guests', 'Dietary Notes', 'Attendance', 'Invited As'],
+    fields: ['name', 'guests', 'dietary', 'attendance', 'invitedAs'],
+    widths: [170, 200, 140, 320, 120, 200],
   },
   WISHES: {
     name: 'Wishes',
-    headers: ['Timestamp', 'Guest Name', 'Message'],
-    fields: ['name', 'message'],
+    headers: ['Timestamp', 'Guest Name', 'Message', 'Invited As'],
+    fields: ['name', 'message', 'invitedAs'],
+    widths: [170, 200, 420, 200],
   },
 };
 
-var HEADER_BG = '#3A2B24';
+var HEADER_BG = '#1A2216';
 var HEADER_FG = '#FAF8F5';
 
 /** Receives form submissions from the website. */
@@ -85,7 +87,7 @@ function doGet(e) {
   return jsonResponse_({ ok: true, message: 'Ann & Crishan wedding endpoint is running.' });
 }
 
-/** Run once from the Apps Script editor to create both tabs up front (optional). */
+/** Run once from the Apps Script editor to create both tabs with headers. */
 function setupSheets() {
   getOrCreateSheet_(SHEETS.RSVP);
   getOrCreateSheet_(SHEETS.WISHES);
@@ -115,13 +117,10 @@ function getOrCreateSheet_(config) {
       .setHorizontalAlignment('center');
     sheet.setFrozenRows(1);
     sheet.getRange('A:A').setNumberFormat('yyyy-mm-dd hh:mm:ss');
-    sheet.setColumnWidth(1, 170);
-    for (var c = 2; c <= cols; c++) {
-      sheet.setColumnWidth(c, config.headers[c - 1] === 'Message' ? 420 : 180);
+    for (var c = 1; c <= cols; c++) {
+      sheet.setColumnWidth(c, config.widths[c - 1]);
     }
-    if (config.name === SHEETS.WISHES.name) {
-      sheet.getRange('C:C').setWrap(true);
-    }
+    sheet.getRange(1, 1, sheet.getMaxRows(), cols).setWrap(true).setVerticalAlignment('top');
   }
 
   return sheet;

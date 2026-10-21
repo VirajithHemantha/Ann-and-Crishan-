@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Music, VolumeX } from 'lucide-react';
 import { Toaster } from 'sonner';
+import { getGuestNameFromPath } from './lib/invite';
 
 import { EnvelopeOpening } from './components/EnvelopeOpening';
 import { IntroVideo } from './components/IntroVideo';
@@ -91,12 +92,7 @@ export default function App() {
         {isMusicPlaying ? <Music className="w-5 h-5 sm:w-6 sm:h-6" /> : <VolumeX className="w-5 h-5 sm:w-6 sm:h-6" />}
       </motion.button>
 
-      {/* Extract Guest Name from URL */}
-      {(() => {
-        const pathParam = window.location.pathname.slice(1);
-        const guestName = pathParam && pathParam !== 'admin' ? decodeURIComponent(pathParam) : null;
-        return <Hero guestName={guestName} />;
-      })()}
+      <Hero guestName={getGuestNameFromPath()} />
       <CoupleDetails />
       <Location />
       <Countdown targetDate={weddingDate} />

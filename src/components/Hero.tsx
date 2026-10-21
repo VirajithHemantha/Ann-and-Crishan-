@@ -229,9 +229,12 @@ export const Hero: React.FC<HeroProps> = ({ guestName }) => {
           {guestName && (
             <motion.div {...fadeUp(3.1)} className="mt-[1.8vh] sm:mt-4 flex flex-col items-center">
               <span className={`font-engraved font-semibold uppercase tracking-[0.28em] text-[8.5px] sm:text-[9px] ${GOLD}`}>
-                Reserved for
+                We cordially invite
               </span>
-              <span className={`font-script text-[1.7rem] sm:text-3xl ${INK} leading-tight`}>{guestName}</span>
+              <span className={`font-script text-[1.7rem] sm:text-3xl ${INK} leading-tight text-center px-4`}>{guestName}</span>
+              <span className={`font-serif italic font-medium text-[13px] sm:text-[14px] ${SEPIA}`}>
+                to celebrate our special day with us
+              </span>
             </motion.div>
           )}
         </motion.div>
